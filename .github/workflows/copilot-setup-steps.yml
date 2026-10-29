@@ -51,9 +51,6 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install Python dependencies
-        run: uv sync
-
       - name: Install cranky
         run: uv tool install --index https://kernel.ubuntu.com/forgejo/api/packages/kernel/pypi/simple/ cranky
 
