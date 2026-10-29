@@ -170,6 +170,10 @@ jobs:
           # even under `sg sbuild`. Make it group-owned and group-writable
           # (setgid) so the test passes and mk-sbuild proceeds to build.
           sudo mkdir -p /var/lib/sbuild
+          # schroot's sbuild fstab bind-mounts /var/lib/sbuild/build into the
+          # chroot's /build; create it so chroot setup doesn't fail with
+          # "special device /var/lib/sbuild/build does not exist".
+          sudo mkdir -p /var/lib/sbuild/build
           sudo chgrp -R sbuild /var/lib/sbuild
           sudo chmod -R g+rwX /var/lib/sbuild
           sudo chmod g+s /var/lib/sbuild
