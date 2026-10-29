@@ -67,3 +67,9 @@ jobs:
         run: |
           which cranky
           cranky --help
+
+      - name: Create base chroot
+        run: cranky chroot create-base resolute:linux
+
+      - name: Create session chroot
+        run: cranky chroot create-session resolute:linux
