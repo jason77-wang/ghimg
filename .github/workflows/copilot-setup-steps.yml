@@ -52,7 +52,13 @@ jobs:
           enable-cache: true
 
       - name: Install cranky
-        run: uv tool install --index https://kernel.ubuntu.com/forgejo/api/packages/kernel/pypi/simple/ cranky
+        env:
+          UV_INDEX_KERNEL_USERNAME: ${{ secrets.KERNEL_FORGEJO_USER }}
+          UV_INDEX_KERNEL_PASSWORD: ${{ secrets.KERNEL_FORGEJO_TOKEN }}
+        run: |
+          echo "user length: ${#UV_INDEX_KERNEL_USERNAME}"
+          echo "token length: ${#UV_INDEX_KERNEL_PASSWORD}"
+          uv tool install --index kernel=https://kernel.ubuntu.com/forgejo/api/packages/kernel/pypi/simple/ cranky
 
       - name: Add uv tools to PATH
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
