@@ -1,0 +1,75 @@
+name: "Copilot Setup Steps"
+
+# Run automatically when this file changes so you can validate it,
+# and allow manual runs from the repository's "Actions" tab.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be named `copilot-setup-steps` or Copilot will not pick it up.
+  copilot-setup-steps:
+    runs-on: ubuntu-24.04
+    # Keep permissions minimal; Copilot gets its own token for its work.
+    permissions:
+      contents: read
+    timeout-minutes: 30 # maximum allowed value is 59
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential \
+            debhelper \
+            devscripts \
+            fakeroot \
+            gawk \
+            git \
+            libncurses-dev \
+            schroot \
+            ubuntu-dev-tools \
+            wget
+
+      - name: Install snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Install cranky
+        run: uv tool install --index https://kernel.ubuntu.com/forgejo/api/packages/kernel/pypi/simple/ cranky
+
+      - name: Add uv tools to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify cranky
+        run: |
+          which cranky
+          cranky --help
