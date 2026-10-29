@@ -202,3 +202,11 @@ jobs:
 
       - name: Create session chroot
         run: sg sbuild -c "EDITOR=true cranky chroot create-session resolute:linux"
+
+      - name: Create crank working directory
+        run: |
+          mkdir -p "$HOME/crank"
+          cd "$HOME/crank"
+          git clone -b master-next git+ssh://hui.wang@git.launchpad.net/~westlake-team/ubuntu/+source/linux-xuantie/+git/resolute linux-main
+          cd linux-main
+          cranky shell-helper main
