@@ -153,8 +153,16 @@ jobs:
           which cranky
           cranky --help
 
+      - name: Set up sbuild
+        run: |
+          # Ensure the runner is a member of the sbuild group.
+          sudo usermod -aG sbuild "$USER"
+          # Pre-create ~/.sbuildrc so mk-sbuild's first run does not open an
+          # interactive editor (which hangs in CI with no terminal).
+          touch "$HOME/.sbuildrc"
+
       - name: Create base chroot
-        run: cranky chroot create-base resolute:linux
+        run: sg sbuild -c "EDITOR=true cranky chroot create-base resolute:linux"
 
       - name: Create session chroot
-        run: cranky chroot create-session resolute:linux
+        run: sg sbuild -c "EDITOR=true cranky chroot create-session resolute:linux"
