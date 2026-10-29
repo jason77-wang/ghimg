@@ -162,6 +162,22 @@ jobs:
           # interactive editor (which hangs in CI with no terminal).
           touch "$HOME/.sbuildrc"
 
+          # The 'resolute' series is too new for the runner's debootstrap, so it
+          # has no matching script. mk-sbuild falls back to a generic 'gutsy'
+          # script that may be absent on recent debootstrap, causing
+          # "Specified release (gutsy) not known to debootstrap". Provide a
+          # debootstrap script for the series by linking it to an available
+          # generic Ubuntu script, and tell mk-sbuild to use it.
+          scripts=/usr/share/debootstrap/scripts
+          base=
+          for c in gutsy noble jammy focal edgy feisty dapper; do
+            if [ -f "$scripts/$c" ]; then base=$c; break; fi
+          done
+          if [ -n "$base" ] && [ ! -e "$scripts/resolute" ]; then
+            sudo ln -s "$base" "$scripts/resolute"
+          fi
+          echo "DEBOOTSTRAP_SCRIPT=resolute" > "$HOME/.mk-sbuild.rc"
+
       - name: Create base chroot
         run: sg sbuild -c "EDITOR=true cranky chroot create-base resolute:linux"
 
