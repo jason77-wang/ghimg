@@ -161,6 +161,17 @@ jobs:
           getent group sbuild >/dev/null || sudo groupadd --system sbuild
           # Ensure the runner is a member of the sbuild group.
           sudo usermod -aG sbuild "$USER"
+          # mk-sbuild treats a non-writable /var/lib/sbuild as a first-time
+          # setup, re-adds the user to the group, prints "you MUST restart
+          # your session", and exits 0 WITHOUT building the chroot. When the
+          # sbuild group is (re)created on newer runner images, that directory
+          # is not owned/writable by the new group, so the write test fails
+          # even under `sg sbuild`. Make it group-owned and group-writable
+          # (setgid) so the test passes and mk-sbuild proceeds to build.
+          sudo mkdir -p /var/lib/sbuild
+          sudo chgrp -R sbuild /var/lib/sbuild
+          sudo chmod -R g+rwX /var/lib/sbuild
+          sudo chmod g+s /var/lib/sbuild
           # Pre-create ~/.sbuildrc so mk-sbuild's first run does not open an
           # interactive editor (which hangs in CI with no terminal).
           touch "$HOME/.sbuildrc"
