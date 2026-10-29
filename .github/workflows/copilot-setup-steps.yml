@@ -156,6 +156,9 @@ jobs:
 
       - name: Set up sbuild
         run: |
+          # Ensure the sbuild group exists (it may be missing on newer
+          # runner images) before adding the runner user to it.
+          getent group sbuild >/dev/null || sudo groupadd --system sbuild
           # Ensure the runner is a member of the sbuild group.
           sudo usermod -aG sbuild "$USER"
           # Pre-create ~/.sbuildrc so mk-sbuild's first run does not open an
