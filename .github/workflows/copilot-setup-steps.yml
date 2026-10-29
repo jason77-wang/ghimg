@@ -207,6 +207,6 @@ jobs:
         run: |
           mkdir -p "$HOME/crank"
           cd "$HOME/crank"
-          git clone -b master-next git+ssh://hui.wang@git.launchpad.net/~westlake-team/ubuntu/+source/linux-xuantie/+git/resolute linux-main
+	  git clone -b master-next https://git.launchpad.net/~cixee-team/ubuntu/+source/linux-cix/+git/resolute linux-main
           cd linux-main
           cranky shell-helper main
