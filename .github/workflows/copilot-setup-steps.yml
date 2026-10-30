@@ -209,4 +209,4 @@ jobs:
           cd "$HOME/crank"
           git clone -b master-next https://git.launchpad.net/~cixee-team/ubuntu/+source/linux-cix/+git/resolute linux-main
           cd linux-main
-          cranky shell-helper main
+          cranky shell-helper tree-type
